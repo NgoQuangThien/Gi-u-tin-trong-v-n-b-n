@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char file_path[1000];
-char message[1000];
+char file_path[10000];
+char message[10000];
 char endcode_file_path[] = "C:/ThienNQ/KTGT/endcode.txt";
 int k;
 
@@ -146,6 +146,98 @@ void endcoding()
 	write_to_file(endcode_content, num_char_of_new_file);
 }
 
+void decode_machester(char *content, int len)
+{
+	int i = 0;
+	int j = 0;
+	int h = 0;
+	int count = 0;
+	char bin_char[7];
+	while(i < (len - 1))
+	{
+		if(content[i]=='0' && content[i+1]=='1')
+		{
+			bin_char[j] = '0';
+			j++;
+			count++;
+			if(count == 7)
+			{
+				message[h] = strtol(bin_char, 0, 2);
+				h++;
+				count = 0;
+				j = 0;
+			}
+		}
+		else if(content[i]=='1' && content[i+1]=='0')
+		{
+			bin_char[j] = '1';
+			j++;
+			count++;
+			if(count == 7)
+			{
+				message[h] = strtol(bin_char, 0, 2);
+				h++;
+				count = 0;
+				j = 0;
+			}
+		}
+		else{
+			break;
+		}
+		i += 2;
+	}
+	printf("%s", message);
+}
+
+void decoding()
+{
+	get_input_file_path();
+	get_input_k();
+	
+	int num_char = characters_of_file();
+	char file_content[num_char - 1];
+	strncpy(file_content, read_file_content(num_char), num_char);
+	int space_number = count_space(file_content, num_char);
+	int i = 0;
+	int num_bit = 0;
+	char temp_msg[10000];
+	while(i<num_char)
+	{
+		if(file_content[i] == 32)
+		{
+			if(file_content[i+1] != 32)
+			{
+				temp_msg[num_bit] = '0';
+				num_bit++;
+			}
+			else
+			{
+				temp_msg[num_bit] = '1';
+				num_bit++;
+				i++;
+			}
+		}
+		i++;
+	}
+	int flag = 0;
+	char bin_split[num_bit];
+	int bin_len = 0;
+	i=0;
+	while(i<num_bit)
+	{
+		flag++;
+		if(flag == 1 || flag == 2)
+		{
+			bin_split[bin_len] = temp_msg[i];
+			bin_len++;	
+		}
+		if(flag == k)
+			flag = 0;
+		i++;
+	}
+	decode_machester(bin_split, bin_len);
+}
+
 void menu()
 {
 	printf("1. Endcode message\n");
@@ -162,7 +254,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 		case 2:{
-			
+			decoding();
 			break;
 		}
 		default:{
