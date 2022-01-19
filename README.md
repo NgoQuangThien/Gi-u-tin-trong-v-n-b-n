@@ -1,2 +1,2 @@
-# B�i T?p L?n - K? Thu?t Gi?u tin
-## Gi?u tin trong t?p v?n b?n
+# Bài Tập Lớn - Kỹ Thuật Giấu Tin
+## Giấu tin trong tệp văn bản sử dụng thuật toán inter-word spacing
