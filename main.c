@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 		default:{
-			printf("Choose error\n");
+			printf("Choice does not exist\n");
 			break;
 		}
 	}
