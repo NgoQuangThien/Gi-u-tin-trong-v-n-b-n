@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "md5.h"
 
 char file_path[10000];
-char message[10000];
-char endcode_file_path[] = "C:/ThienNQ/KTGT/endcode.txt";
+char message[1000000];
+char encode_file_path[] = "encode.txt";
 int k;
 
 void get_input_file_path()
@@ -26,7 +27,7 @@ void get_input_k()
 	scanf("%d", &k);
 }
 
-char * endcode_message(int message_len)
+char * encode_message(int message_len)
 {
 	char *msg = malloc(message_len * 7);
 	int index = 0;
@@ -82,7 +83,7 @@ int count_space(char *file_content, int num_char)
 void write_to_file(char *content, int n)
 {
 	FILE *fp;
-	fp = fopen(endcode_file_path, "w");
+	fp = fopen(encode_file_path, "w");
 	int i;
 	for(i = 0; i < n; i++)
 	{
@@ -90,7 +91,7 @@ void write_to_file(char *content, int n)
 	}
 	fclose(fp);
 }
-void endcoding()
+void encoding()
 {
 	get_input_file_path();
 	get_input_message();
@@ -98,7 +99,7 @@ void endcoding()
 	
 	int message_len = strlen(message) - 1;
 	char msg[(message_len * 7) - 1];
-	strncpy(msg, endcode_message(message_len), message_len*7);
+	strncpy(msg, encode_message(message_len), message_len*7);
 	
 	int num_char = characters_of_file();
 	char file_content[num_char - 1];
@@ -112,25 +113,25 @@ void endcoding()
 	}
 	
 	int num_char_of_new_file = num_char + (message_len * 7);
-	char endcode_content[num_char_of_new_file - 1];
+	char encode_content[num_char_of_new_file - 1];
 	int i, j, h = 0;
 	int space_flag = 0;
 	while(i < num_char_of_new_file)
 	{
-		endcode_content[i] = file_content[j];
+		encode_content[i] = file_content[j];
 		if(file_content[j] == 32)
 		{
 			space_flag ++;
 			if(msg[h] == '1' && space_flag == 1)
 			{
 				i++;
-				endcode_content[i] = ' ';
+				encode_content[i] = ' ';
 				goto BREAK;
 			}
 			if(msg[h] == '0' && space_flag == 2)
 			{
 				i++;
-				endcode_content[i] = ' ';
+				encode_content[i] = ' ';
 				goto BREAK;
 			}
 			
@@ -143,7 +144,8 @@ void endcoding()
 		i++;
 		j++;
 	}
-	write_to_file(endcode_content, num_char_of_new_file);
+	write_to_file(encode_content, num_char_of_new_file);
+	printf("MD5 hash of file %s is: %s\n", encode_file_path, get_file_md5(encode_file_path));
 }
 
 void decode_machester(char *content, int len)
@@ -186,12 +188,31 @@ void decode_machester(char *content, int len)
 		}
 		i += 2;
 	}
+	message[h] = '\0';
 	printf("%s", message);
+}
+
+int check_file_integrity()
+{
+	char file_md5[100];
+	printf("MD5 hash of file: ");
+	fflush(stdin);
+	scanf("%s", file_md5);
+	if(strcmp(get_file_md5(file_path), file_md5) == 0)
+		return 0;
+	else
+		return 1;
 }
 
 void decoding()
 {
 	get_input_file_path();
+	if(check_file_integrity() == 1)
+	{
+		printf("Verification failed\n");
+		return;
+	}
+	printf("Verification successful\n");
 	get_input_k();
 	
 	int num_char = characters_of_file();
@@ -200,7 +221,7 @@ void decoding()
 	int space_number = count_space(file_content, num_char);
 	int i = 0;
 	int num_bit = 0;
-	char temp_msg[10000];
+	char temp_msg[1000000];
 	while(i<num_char)
 	{
 		if(file_content[i] == 32)
@@ -240,8 +261,9 @@ void decoding()
 
 void menu()
 {
-	printf("1. Endcode message\n");
+	printf("1. Encode message\n");
 	printf("2. Decode message\n");
+	printf("Enter: ");
 }
 
 int main(int argc, char *argv[]) {
@@ -250,7 +272,7 @@ int main(int argc, char *argv[]) {
 	scanf("%d", &choose);
 	switch(choose){
 		case 1:{
-			endcoding();
+			encoding();
 			break;
 		}
 		case 2:{
